@@ -2,7 +2,20 @@ import { cardRepository } from "./card.repository";
 
 
 import { ygoprodeckClient } from "@/ygoprodeck/ygoprodeck.client";
-import { mapYgoProDeckCardToCardInput } from "@/ygoprodeck/ygoprodeck.mapper";
+
+
+import {
+  mapYgoProDeckBanlists,
+  mapYgoProDeckCardToCardInput,
+  mapYgoProDeckFormats,
+  mapYgoProDeckImages,
+  mapYgoProDeckPrices,
+  mapYgoProDeckPrintings,
+} from "@/ygoprodeck/ygoprodeck.mapper";
+
+
+
+
 
 import type {
   Card,
@@ -63,10 +76,11 @@ class CardService {
 
 
 
-  async importCardByName(
+ async importCardByName(
   name: string
-): Promise<Card> {
-  const normalizedName = name.trim();
+) {
+  const normalizedName =
+    name.trim();
 
   if (!normalizedName) {
     throw new Error(
@@ -74,7 +88,7 @@ class CardService {
     );
   }
 
-  // 1. Consultar YGOPRODeck
+  // 1. Obtener datos externos
   const externalCard =
     await ygoprodeckClient.getCardByName(
       normalizedName
@@ -86,15 +100,78 @@ class CardService {
     );
   }
 
-  // 2. Transformar formato externo
-  // al formato de nuestra DB
+  // 2. Guardar carta principal
   const cardInput =
     mapYgoProDeckCardToCardInput(
       externalCard
     );
 
-  // 3. Guardar en Supabase
-  return this.saveCard(cardInput);
+  const savedCard =
+    await this.saveCard(cardInput);
+
+  // 3. Preparar relaciones
+  const printings =
+    mapYgoProDeckPrintings(
+      externalCard,
+      savedCard.id
+    );
+
+  const images =
+    mapYgoProDeckImages(
+      externalCard,
+      savedCard.id
+    );
+
+  const prices =
+    mapYgoProDeckPrices(
+      externalCard,
+      savedCard.id
+    );
+
+  const formats =
+    mapYgoProDeckFormats(
+      externalCard,
+      savedCard.id
+    );
+
+  const banlists =
+    mapYgoProDeckBanlists(
+      externalCard,
+      savedCard.id
+    );
+
+  // 4. Persistir relaciones
+  await cardRepository.upsertPrintings(
+    printings
+  );
+
+  await cardRepository.upsertImages(
+    images
+  );
+
+  await cardRepository.upsertExternalPrices(
+    prices
+  );
+
+  await cardRepository.upsertFormats(
+    formats
+  );
+
+  await cardRepository.upsertBanlists(
+    banlists
+  );
+
+  return {
+    card: savedCard,
+
+    imported: {
+      printings: printings.length,
+      images: images.length,
+      external_prices: prices.length,
+      formats: formats.length,
+      banlists: banlists.length,
+    },
+  };
 }
 
 

@@ -2,9 +2,21 @@ import { supabase } from "@/config/supabase";
 
 import type {
   Card,
+  CardBanlistInput,
+  CardExternalPriceInput,
+  CardFormatInput,
+  CardImageInput,
+  CardPrintingInput,
   CardQuery,
   UpsertCardInput,
 } from "./card.types";
+
+
+
+
+
+
+
 
 class CardRepository {
   async findAll(filters: CardQuery = {}): Promise<Card[]> {
@@ -107,6 +119,117 @@ class CardRepository {
 
     return data as Card;
   }
+
+
+
+  ////
+  async upsertPrintings(
+  printings: CardPrintingInput[]
+): Promise<void> {
+  if (printings.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("card_printings")
+    .upsert(printings, {
+      onConflict:
+        "card_id,set_code,rarity",
+    });
+
+  if (error) {
+    throw new Error(
+      `Error guardando impresiones: ${error.message}`
+    );
+  }
+}
+
+
+async upsertImages(
+  images: CardImageInput[]
+): Promise<void> {
+  if (images.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("card_images")
+    .upsert(images, {
+      onConflict:
+        "card_id,ygoprodeck_image_id",
+    });
+
+  if (error) {
+    throw new Error(
+      `Error guardando imágenes: ${error.message}`
+    );
+  }
+}
+
+async upsertExternalPrices(
+  prices: CardExternalPriceInput[]
+): Promise<void> {
+  if (prices.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("card_external_prices")
+    .upsert(prices, {
+      onConflict:
+        "card_id,vendor",
+    });
+
+  if (error) {
+    throw new Error(
+      `Error guardando precios externos: ${error.message}`
+    );
+  }
+}
+async upsertFormats(
+  formats: CardFormatInput[]
+): Promise<void> {
+  if (formats.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("card_formats")
+    .upsert(formats, {
+      onConflict:
+        "card_id,format",
+    });
+
+  if (error) {
+    throw new Error(
+      `Error guardando formatos: ${error.message}`
+    );
+  }
+}
+
+
+async upsertBanlists(
+  banlists: CardBanlistInput[]
+): Promise<void> {
+  if (banlists.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("card_banlists")
+    .upsert(banlists, {
+      onConflict:
+        "card_id,format",
+    });
+
+  if (error) {
+    throw new Error(
+      `Error guardando banlist: ${error.message}`
+    );
+  }
+}
+
+
 }
 
 export const cardRepository =

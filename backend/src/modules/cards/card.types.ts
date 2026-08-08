@@ -110,3 +110,63 @@ export interface CardQuery {
 export type ImportCardBody = {
   name: string;
 };
+
+
+export interface CardPrintingInput {
+  card_id: string;
+
+  set_name: string;
+  set_code: string;
+
+  rarity: string | null;
+  rarity_code: string | null;
+
+  edition?: string | null;
+  external_url?: string | null;
+
+  reference_price: number | null;
+
+  currency: string;
+
+  api_synced_at: string;
+}
+
+export interface CardImageInput {
+  card_id: string;
+
+  ygoprodeck_image_id: number;
+
+  source_image_url: string | null;
+  source_image_small_url: string | null;
+  source_image_cropped_url: string | null;
+
+  is_primary: boolean;
+}
+
+export interface CardExternalPriceInput {
+  card_id: string;
+
+  vendor: string;
+
+  price: number | null;
+
+  currency: string;
+
+  api_synced_at: string;
+}
+
+export interface CardFormatInput {
+  card_id: string;
+
+  format: string;
+}
+
+export interface CardBanlistInput {
+  card_id: string;
+
+  format: string;
+
+  status: string;
+
+  api_synced_at: string;
+}
