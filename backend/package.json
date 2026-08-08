@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "dev": "bun --watch src/server.ts",
+    "start": "bun src/server.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "@types/express": "^5.0.6"
+  }
+}
