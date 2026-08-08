@@ -18,6 +18,15 @@ inventoryRouter.post(
   )
 );
 
+
+
+inventoryRouter.post(
+  "/stock",
+  inventoryController.addStock.bind(
+    inventoryController
+  )
+);
+
 inventoryRouter.get(
   "/:id",
   inventoryController.getById.bind(
@@ -44,4 +53,7 @@ inventoryRouter.post(
   inventoryController.createMovement.bind(
     inventoryController
   )
+
+
+  
 );

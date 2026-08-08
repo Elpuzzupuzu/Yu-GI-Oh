@@ -113,3 +113,25 @@ export interface InventoryQuery {
 
   in_stock?: boolean;
 }
+
+export interface AddInventoryStockInput {
+  printing_id: string;
+
+  condition: CardCondition;
+
+  language?: string;
+
+  quantity: number;
+
+  sale_price?: number | null;
+
+  currency?: string;
+
+  cost_price?: number | null;
+
+  location?: string | null;
+
+  notes?: string | null;
+
+  reference?: string | null;
+}

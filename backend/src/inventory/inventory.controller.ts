@@ -7,6 +7,7 @@ import type {
 import { inventoryService } from "./inventory.service";
 
 import type {
+  AddInventoryStockInput,
   CardCondition,
   CreateInventoryInput,
   CreateInventoryMovementInput,
@@ -191,6 +192,37 @@ class InventoryController {
       next(error);
     }
   }
+
+  async addStock(
+  req: Request<
+    Record<string, never>,
+    unknown,
+    AddInventoryStockInput
+  >,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const result =
+      await inventoryService.addStock(
+        req.body
+      );
+
+    return res.status(
+      result.created ? 201 : 200
+    ).json({
+      success: true,
+
+      message: result.created
+        ? "Inventario creado y stock registrado correctamente."
+        : "Stock actualizado correctamente.",
+
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 }
 
 export const inventoryController =
