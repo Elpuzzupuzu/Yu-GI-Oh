@@ -27,6 +27,15 @@ inventoryRouter.post(
   )
 );
 
+
+inventoryRouter.get(
+  "/details",
+  inventoryController.getAllWithDetails.bind(
+    inventoryController
+  )
+);
+
+
 inventoryRouter.get(
   "/:id",
   inventoryController.getById.bind(

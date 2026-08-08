@@ -335,6 +335,11 @@ class InventoryService {
     created,
   };
 }
+
+async getInventoryWithDetails() {
+  return inventoryRepository.findAllWithDetails();
+}
+
 }
 
 export const inventoryService =

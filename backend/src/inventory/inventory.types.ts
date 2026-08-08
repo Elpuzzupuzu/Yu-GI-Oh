@@ -135,3 +135,49 @@ export interface AddInventoryStockInput {
 
   reference?: string | null;
 }
+
+export interface InventoryCardSummary {
+  id: string;
+  name: string;
+  image_url: string | null;
+}
+
+export interface InventoryPrintingSummary {
+  id: string;
+
+  set_name: string;
+  set_code: string;
+
+  rarity: string | null;
+  rarity_code: string | null;
+
+  reference_price: number | null;
+
+  card: InventoryCardSummary;
+}
+
+export interface InventoryWithDetails {
+  id: string;
+
+  printing_id: string;
+
+  condition: CardCondition;
+  language: string;
+
+  quantity: number;
+
+  sale_price: number | null;
+  currency: string;
+
+  cost_price: number | null;
+
+  location: string | null;
+  notes: string | null;
+
+  is_active: boolean;
+
+  created_at: string;
+  updated_at: string;
+
+  printing: InventoryPrintingSummary;
+}

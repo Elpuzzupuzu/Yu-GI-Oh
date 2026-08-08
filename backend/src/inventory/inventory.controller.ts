@@ -223,6 +223,25 @@ class InventoryController {
     next(error);
   }
 }
+
+
+async getAllWithDetails(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const inventory =
+      await inventoryService.getInventoryWithDetails();
+
+    return res.status(200).json({
+      success: true,
+      data: inventory,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 }
 
 export const inventoryController =
