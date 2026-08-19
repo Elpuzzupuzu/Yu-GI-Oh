@@ -26,6 +26,13 @@ cardRouter.post(
 );
 
 cardRouter.get(
+  "/printings",
+  cardController.getPrintings.bind(
+    cardController
+  )
+);
+
+cardRouter.get(
   "/:id",
   cardController.getById.bind(
     cardController

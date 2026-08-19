@@ -170,3 +170,51 @@ export interface CardBanlistInput {
 
   api_synced_at: string;
 }
+
+
+export interface CardPrintingQuery {
+  name?: string;
+  set_code?: string;
+  rarity?: string;
+}
+
+export interface CardPrintingDetails {
+  id: string;
+
+  set_name: string;
+  set_code: string;
+
+  rarity: string | null;
+  rarity_code: string | null;
+
+  reference_price: number | null;
+  currency: string;
+
+  card: {
+    id: string;
+    name: string;
+    ygoprodeck_id: number;
+    image_url: string | null;
+  };
+
+  inventory: CardPrintingInventorySummary[];
+}
+
+
+export interface CardPrintingInventorySummary {
+  id: string;
+
+  condition: string;
+  language: string;
+
+  quantity: number;
+
+  sale_price: number | null;
+  currency: string;
+
+  cost_price: number | null;
+
+  location: string | null;
+
+  is_active: boolean;
+}

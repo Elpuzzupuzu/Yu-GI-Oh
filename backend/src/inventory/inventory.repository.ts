@@ -458,7 +458,43 @@ async findByIdWithDetails(
     },
   } as InventoryWithDetails;
 }
+//////
 
+async registerMovementAtomic(
+  input: CreateInventoryMovementInput
+): Promise<{
+  inventory: InventoryItem;
+  movement: InventoryMovement;
+}> {
+  const { data, error } = await supabase.rpc(
+    "register_inventory_movement",
+    {
+      p_inventory_id: input.inventory_id,
+      p_movement_type: input.movement_type,
+      p_quantity: input.quantity,
+      p_unit_cost: input.unit_cost ?? null,
+      p_reference: input.reference ?? null,
+      p_notes: input.notes ?? null,
+    }
+  );
+
+  if (error) {
+    throw new Error(
+      `Error registrando movimiento: ${error.message}`
+    );
+  }
+
+  if (!data) {
+    throw new Error(
+      "No se recibió respuesta al registrar el movimiento."
+    );
+  }
+
+  return data as {
+    inventory: InventoryItem;
+    movement: InventoryMovement;
+  };
+}
 
 
 

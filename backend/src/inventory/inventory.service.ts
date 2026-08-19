@@ -121,126 +121,37 @@ class InventoryService {
     );
   }
 
-  // async registerMovement(
-  //   input: CreateInventoryMovementInput
-  // ): Promise<{
-  //   inventory: InventoryItem;
-  //   movement: InventoryMovement;
-  // }> {
-  //   if (input.quantity === 0) {
-  //     throw new Error(
-  //       "La cantidad del movimiento no puede ser 0."
-  //     );
-  //   }
-
-  //   const inventory =
-  //     await this.getInventoryById(
-  //       input.inventory_id
-  //     );
-
-  //   const newQuantity =
-  //     inventory.quantity + input.quantity;
-
-  //   if (newQuantity < 0) {
-  //     throw new Error(
-  //       "El movimiento dejaría el inventario con cantidad negativa."
-  //     );
-  //   }
-
-  //   const updatedInventory =
-  //     await inventoryRepository.updateQuantity(
-  //       inventory.id,
-  //       newQuantity
-  //     );
-
-  //   const movement =
-  //     await inventoryRepository.createMovement(
-  //       input
-  //     );
-
-  //   return {
-  //     inventory: updatedInventory,
-  //     movement,
-  //   };
-  // }
+ 
   
 
 
-  async registerMovement(
+async registerMovement(
   input: CreateInventoryMovementInput
 ): Promise<{
   inventory: InventoryItem;
   movement: InventoryMovement;
 }> {
+  if (!input.inventory_id) {
+    throw new Error(
+      "inventory_id es obligatorio."
+    );
+  }
+
   if (!Number.isInteger(input.quantity)) {
     throw new Error(
-      "La cantidad del movimiento debe ser un número entero."
+      "La cantidad debe ser un número entero."
     );
   }
 
   if (input.quantity === 0) {
     throw new Error(
-      "La cantidad del movimiento no puede ser 0."
+      "La cantidad no puede ser 0."
     );
   }
 
-  const positiveMovements = [
-    "purchase",
-    "return",
-  ];
-
-  const negativeMovements = [
-    "sale",
-    "damage",
-  ];
-
-  if (
-    positiveMovements.includes(input.movement_type) &&
-    input.quantity < 0
-  ) {
-    throw new Error(
-      `El movimiento ${input.movement_type} debe tener una cantidad positiva.`
-    );
-  }
-
-  if (
-    negativeMovements.includes(input.movement_type) &&
-    input.quantity > 0
-  ) {
-    throw new Error(
-      `El movimiento ${input.movement_type} debe tener una cantidad negativa.`
-    );
-  }
-
-  const inventory =
-    await this.getInventoryById(
-      input.inventory_id
-    );
-
-  const newQuantity =
-    inventory.quantity + input.quantity;
-
-  if (newQuantity < 0) {
-    throw new Error(
-      `Stock insuficiente. Disponible: ${inventory.quantity}.`
-    );
-  }
-
-  const updatedInventory =
-    await inventoryRepository.updateQuantity(
-      inventory.id,
-      newQuantity
-    );
-
-  const movement =
-    await inventoryRepository.createMovement(
-      input
-    );
-
-  return {
-    inventory: updatedInventory,
-    movement,
-  };
+  return inventoryRepository.registerMovementAtomic(
+    input
+  );
 }
 
 

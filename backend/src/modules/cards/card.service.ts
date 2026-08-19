@@ -14,14 +14,16 @@ import {
 } from "@/ygoprodeck/ygoprodeck.mapper";
 
 
-
-
-
 import type {
   Card,
+  CardPrintingDetails,
+  CardPrintingQuery,
   CardQuery,
   UpsertCardInput,
 } from "./card.types";
+
+
+
 
 class CardService {
   async getCards(
@@ -172,6 +174,17 @@ class CardService {
       banlists: banlists.length,
     },
   };
+  
+}
+
+
+///////////////
+async getPrintings(
+  filters: CardPrintingQuery = {}
+): Promise<CardPrintingDetails[]> {
+  return cardRepository.findPrintings(
+    filters
+  );
 }
 
 

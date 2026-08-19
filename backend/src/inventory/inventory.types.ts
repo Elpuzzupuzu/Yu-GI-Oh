@@ -186,3 +186,5 @@ export interface InventoryDetailsWithMovements {
   inventory: InventoryWithDetails;
   movements: InventoryMovement[];
 }
+
+

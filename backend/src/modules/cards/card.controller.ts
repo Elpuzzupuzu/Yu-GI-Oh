@@ -163,6 +163,45 @@ class CardController {
     next(error);
   }
 }
+//////
+async getPrintings(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const {
+      name,
+      set_code,
+      rarity,
+    } = req.query;
+
+    const printings =
+      await cardService.getPrintings({
+        name:
+          typeof name === "string"
+            ? name
+            : undefined,
+
+        set_code:
+          typeof set_code === "string"
+            ? set_code
+            : undefined,
+
+        rarity:
+          typeof rarity === "string"
+            ? rarity
+            : undefined,
+      });
+
+    return res.status(200).json({
+      success: true,
+      data: printings,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 
 
