@@ -8,6 +8,7 @@ import type {
   InventoryMovement,
   InventoryQuery,
   UpdateInventoryInput,
+  InventoryDetailsWithMovements
 } from "./inventory.types";
 
 
@@ -120,48 +121,128 @@ class InventoryService {
     );
   }
 
+  // async registerMovement(
+  //   input: CreateInventoryMovementInput
+  // ): Promise<{
+  //   inventory: InventoryItem;
+  //   movement: InventoryMovement;
+  // }> {
+  //   if (input.quantity === 0) {
+  //     throw new Error(
+  //       "La cantidad del movimiento no puede ser 0."
+  //     );
+  //   }
+
+  //   const inventory =
+  //     await this.getInventoryById(
+  //       input.inventory_id
+  //     );
+
+  //   const newQuantity =
+  //     inventory.quantity + input.quantity;
+
+  //   if (newQuantity < 0) {
+  //     throw new Error(
+  //       "El movimiento dejaría el inventario con cantidad negativa."
+  //     );
+  //   }
+
+  //   const updatedInventory =
+  //     await inventoryRepository.updateQuantity(
+  //       inventory.id,
+  //       newQuantity
+  //     );
+
+  //   const movement =
+  //     await inventoryRepository.createMovement(
+  //       input
+  //     );
+
+  //   return {
+  //     inventory: updatedInventory,
+  //     movement,
+  //   };
+  // }
+  
+
+
   async registerMovement(
-    input: CreateInventoryMovementInput
-  ): Promise<{
-    inventory: InventoryItem;
-    movement: InventoryMovement;
-  }> {
-    if (input.quantity === 0) {
-      throw new Error(
-        "La cantidad del movimiento no puede ser 0."
-      );
-    }
-
-    const inventory =
-      await this.getInventoryById(
-        input.inventory_id
-      );
-
-    const newQuantity =
-      inventory.quantity + input.quantity;
-
-    if (newQuantity < 0) {
-      throw new Error(
-        "El movimiento dejaría el inventario con cantidad negativa."
-      );
-    }
-
-    const updatedInventory =
-      await inventoryRepository.updateQuantity(
-        inventory.id,
-        newQuantity
-      );
-
-    const movement =
-      await inventoryRepository.createMovement(
-        input
-      );
-
-    return {
-      inventory: updatedInventory,
-      movement,
-    };
+  input: CreateInventoryMovementInput
+): Promise<{
+  inventory: InventoryItem;
+  movement: InventoryMovement;
+}> {
+  if (!Number.isInteger(input.quantity)) {
+    throw new Error(
+      "La cantidad del movimiento debe ser un número entero."
+    );
   }
+
+  if (input.quantity === 0) {
+    throw new Error(
+      "La cantidad del movimiento no puede ser 0."
+    );
+  }
+
+  const positiveMovements = [
+    "purchase",
+    "return",
+  ];
+
+  const negativeMovements = [
+    "sale",
+    "damage",
+  ];
+
+  if (
+    positiveMovements.includes(input.movement_type) &&
+    input.quantity < 0
+  ) {
+    throw new Error(
+      `El movimiento ${input.movement_type} debe tener una cantidad positiva.`
+    );
+  }
+
+  if (
+    negativeMovements.includes(input.movement_type) &&
+    input.quantity > 0
+  ) {
+    throw new Error(
+      `El movimiento ${input.movement_type} debe tener una cantidad negativa.`
+    );
+  }
+
+  const inventory =
+    await this.getInventoryById(
+      input.inventory_id
+    );
+
+  const newQuantity =
+    inventory.quantity + input.quantity;
+
+  if (newQuantity < 0) {
+    throw new Error(
+      `Stock insuficiente. Disponible: ${inventory.quantity}.`
+    );
+  }
+
+  const updatedInventory =
+    await inventoryRepository.updateQuantity(
+      inventory.id,
+      newQuantity
+    );
+
+  const movement =
+    await inventoryRepository.createMovement(
+      input
+    );
+
+  return {
+    inventory: updatedInventory,
+    movement,
+  };
+}
+
 
   async getMovements(
     inventoryId: string
@@ -338,6 +419,30 @@ class InventoryService {
 
 async getInventoryWithDetails() {
   return inventoryRepository.findAllWithDetails();
+}
+async getInventoryDetails(
+  id: string
+): Promise<InventoryDetailsWithMovements> {
+  const inventory =
+    await inventoryRepository.findByIdWithDetails(
+      id
+    );
+
+  if (!inventory) {
+    throw new Error(
+      "Registro de inventario no encontrado."
+    );
+  }
+
+  const movements =
+    await inventoryRepository.findMovements(
+      id
+    );
+
+  return {
+    inventory,
+    movements,
+  };
 }
 
 }

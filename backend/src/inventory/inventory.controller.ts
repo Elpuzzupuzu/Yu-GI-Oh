@@ -242,6 +242,29 @@ async getAllWithDetails(
     next(error);
   }
 }
+
+
+async getDetails(
+  req: Request<InventoryIdParams>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+
+    const details =
+      await inventoryService.getInventoryDetails(
+        id
+      );
+
+    return res.status(200).json({
+      success: true,
+      data: details,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 }
 
 export const inventoryController =

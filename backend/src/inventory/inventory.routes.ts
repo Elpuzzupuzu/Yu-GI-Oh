@@ -5,6 +5,13 @@ import { inventoryController } from "./inventory.controller";
 export const inventoryRouter = Router();
 
 inventoryRouter.get(
+  "/:id/details",
+  inventoryController.getDetails.bind(
+    inventoryController
+  )
+);
+
+inventoryRouter.get(
   "/",
   inventoryController.getAll.bind(
     inventoryController

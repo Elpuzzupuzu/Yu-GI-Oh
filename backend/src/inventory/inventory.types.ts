@@ -181,3 +181,8 @@ export interface InventoryWithDetails {
 
   printing: InventoryPrintingSummary;
 }
+
+export interface InventoryDetailsWithMovements {
+  inventory: InventoryWithDetails;
+  movements: InventoryMovement[];
+}
